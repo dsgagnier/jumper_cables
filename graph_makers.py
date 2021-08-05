@@ -27,7 +27,7 @@ def make_words(letters, length, words = [], current_length = 0):
     current_length += 1
     return make_words(letters, length, words = new_words, current_length = current_length) 
 
-def make_graphs_n_d(num_nodes, num_cols):
+def make_graphs_n_d(num_nodes, num_cols, connected = False):
     '''Returns a list of all graphs (up to symmetry if the nodes are considered identical)
     with num_nodes nodes and num_cols colours. The graphs may or may not be connected.
     '''
@@ -40,17 +40,18 @@ def make_graphs_n_d(num_nodes, num_cols):
     for perm in col_perms:
         new_graph = Graph.Graph(n, d, perm)
 
-        current_graphs = len(graphs)
-        i = 0
-        new = True
-        while i < current_graphs:
-            if new_graph.is_equiv(graphs[i]):
-                new = False
-            i += 1
-        if new:
-            graphs.append(new_graph)
-        if len(graphs) % 10 == 0:
-            print(len(graphs))
+        if not connected or new_graph.is_connected(): 
+            current_graphs = len(graphs)
+            i = 0
+            new = True
+            while i < current_graphs:
+                if new_graph.is_equiv(graphs[i]):
+                    new = False
+                i += 1
+            if new:
+                graphs.append(new_graph)
+            if len(graphs) % 10 == 0:
+                print(len(graphs))
     return graphs
 
 if __name__ == "__main__":
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     #    g.print_graph()
     #    print()
 
-    #graphs = make_graphs_n_d(3,2)
+    graphs = make_graphs_n_d(4,2)
 
 ##    n = 1
 ##    while True:
@@ -67,4 +68,4 @@ if __name__ == "__main__":
 ##        print(f"The result for n = {n} is the one above.")
 ##        n += 1
 ##        input()
-    print(len(make_graphs_n_d(4,3)))
+#    print(len(make_graphs_n_d(4,3)))

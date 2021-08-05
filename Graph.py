@@ -57,31 +57,6 @@ class Graph:
             print(self.col_edges[i])
             i += 1
 
-    def is_equiv_old(self, graph2): # IS BROKEN
-        '''
-        Given two graphs, this function determines if they are equal up to relabling of
-        the nodes.
-        '''
-        if len(self.nodes) != len(graph2.nodes) or \
-           len(self.col_edges) != len(graph2.col_edges):
-            return False
-        n = len(self.nodes)
-        cols = len(self.col_edges)
-        perms = mat.get_perms(mat.int_list(n)) # all possible permutations
-
-        for perm in perms:
-            d = 0
-            # Take a deep copy of the colour matrix of graph2 so we can permute it
-            permuted = copy.deepcopy(graph2.col_matrix)
-            while d < cols:
-                # Permute colour matrices one at a time
-                mat.symmetric_permute(permuted[d], perm)
-                d += 1
-            print(permuted)
-            if self.col_matrix == permuted:
-                return True
-        return False
-
     def is_equiv(self, graph2):
         '''
         Given two graphs, this function determines if they are equal up to relabling of
@@ -105,6 +80,29 @@ class Graph:
                 return True
         return False
 
+    def is_connected(self):
+        '''
+        This function returns true if the skeleton of the graph (given by all_edges)
+        is connected, and returns false otherwise.
+        '''
+        
+        seen = [0]
+        for i in range(len(self.nodes)):
+            updated = False
+            if len(seen) == len(self.nodes):    # We have seen all of the nodes
+                return True
+            for edge in self.all_edges:
+                # See which new nodes we can get to from seen
+                if edge[0] in seen and edge[1] not in seen:
+                    seen.append(edge[1])
+                    updated = True
+                elif edge[1] in seen and edge[0] not in seen:
+                    seen.append(edge[0])
+                    updated = True
+            if not updated:     # We can't get to any new nodes
+                return False
+        return False # We never saw all the nodes
+
 if __name__ == "__main__":
     # Testing constructor and print_graph()
     g1 = Graph(3, 2, [[0,1,2],[0,1,2]])
@@ -117,7 +115,11 @@ if __name__ == "__main__":
     mat.print_m(g2.matrix)
 
     # Test is_equiv()
-    #print(g1.is_equiv(g1)) # True
-    #print(g2.is_equiv(g2)) # True
+    print(g1.is_equiv(g1)) # True
+    print(g2.is_equiv(g2)) # True
     print(g1.is_equiv(g2)) # False
+
+    # Test is_connected()
+    print(g1.is_connected())
+    print(g2.is_connected())
     
